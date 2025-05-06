@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine.UI;
+using static Unity.VisualScripting.Icons;
 
 public class DownloadManager_tmp : MonoBehaviour
 {
@@ -13,10 +14,11 @@ public class DownloadManager_tmp : MonoBehaviour
     public GameObject downloadProgress;
     [SerializeField] private GameObject assetBundleProgressPrefab;
     [SerializeField] private GameObject audioProgressPrefab;
-    [SerializeField] private GameObject noInternetPopup;
+    //[SerializeField] private GameObject ProgressBar;
+    [SerializeField] private GameObject noInternetPopup; // Меню при отсутствии соединения
 
     [SerializeField]
-    private bool isActive = true;
+    private bool isActive = true; // Переменная, которая показывает есть ли интеренет соединение или нет, и которую будем читать из скрипта TapButton
     public bool IsActive
     {
         get { return isActive; }
@@ -43,8 +45,8 @@ public class DownloadManager_tmp : MonoBehaviour
     public GameObject langMenu;
 
     public GameObject menuScroll;
-    public GameObject tap_Button;
-    public GameObject prefabHolder;
+    public GameObject tap_Button; // Ссылка на тыкалку по которой запускается загрузка истории и звуков для назначения в историю
+    public GameObject prefabHolder;           // Сюда привязан объект, у которого появится чайлд
 
     void Start()
     {
@@ -66,25 +68,30 @@ public class DownloadManager_tmp : MonoBehaviour
         storyManager = FindObjectOfType<StoryManager>();
         audioDataManager = FindObjectOfType<AudioDataManager>();
         languageManager = FindObjectOfType<GlobalLanguageManager>();
+        //DownloadNewLanguage();
+
     }
+
 
     public void DownloadNewLanguage()
     {
         if (languageManager != null)
         {
             languageCode = languageManager.GetSelectedLanguage();
+
             languageManager.LoadLanguage();
+
         }
         else
         {
             Debug.LogWarning("GlobalLanguageManager component not found.");
         }
     }
-
     public IEnumerator DownloadStoryAssets(int storyIndex, StoryManager.Story story)
     {
         DownloadNewLanguage();
         Debug.Log("Current selected language: " + languageCode);
+
         totalAssetBundles = story.bundleUrls.Length;
         totalAudioFiles = story.audioUrls[languageCode].Length;
 
@@ -124,7 +131,6 @@ public class DownloadManager_tmp : MonoBehaviour
             }
         }
 
-        // Проверка интернет-соединения
         if (Application.internetReachability == NetworkReachability.NotReachable)
         {
             Debug.LogWarning("Нет подключения к интернету.");
@@ -151,12 +157,57 @@ public class DownloadManager_tmp : MonoBehaviour
             isActive = true;
         }
 
-        // Показ прогресса
         assetBundleProgressText.gameObject.SetActive(true);
         audioProgressText.gameObject.SetActive(true);
         progressBarImage.gameObject.SetActive(true);
 
-        // Загрузка AssetBundles
+        // === ЗАГРУЗКА АУДИО (теперь первая) ===
+        for (int pageIndex = 0; pageIndex < totalAudioFiles; pageIndex++)
+        {
+            string languagePath = Path.Combine(storyManager.GetStoryFolderPath(storyIndex), languageCode);
+            string audioFileName = $"{story.storyName}_{storyIndex:D2}_{languageCode}_sc_{pageIndex:D2}.mp3";
+            string audioUrl = story.audioUrls[languageCode][pageIndex];
+
+            if (!Directory.Exists(languagePath))
+            {
+                Directory.CreateDirectory(languagePath);
+            }
+
+            string audioFilePath = Path.Combine(languagePath, audioFileName);
+
+            if (!File.Exists(audioFilePath))
+            {
+                using (UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(audioUrl, AudioType.MPEG))
+                {
+                    request.SendWebRequest();
+                    while (!request.isDone)
+                    {
+                        float currentProgress = (float)(downloadedFiles + request.downloadProgress) / totalFiles;
+                        UpdateCombinedProgress(currentProgress);
+                        yield return null;
+                    }
+
+                    if (request.result == UnityWebRequest.Result.Success)
+                    {
+                        File.WriteAllBytes(audioFilePath, request.downloadHandler.data);
+                        audioDataManager.SaveAudioFileDataToJson(storyIndex, pageIndex, audioFilePath);
+                    }
+                    else
+                    {
+                        Debug.LogError($"Ошибка скачивания аудио: {request.error}");
+                    }
+                }
+            }
+            else
+            {
+                audioDataManager.SaveAudioFileDataToJson(storyIndex, pageIndex, audioFilePath);
+            }
+
+            downloadedAudioFiles++;
+            downloadedFiles++;
+        }
+
+        // === ЗАГРУЗКА АССЕТОВ (теперь после аудио) ===
         for (int pageIndex = 0; pageIndex < totalAssetBundles; pageIndex++)
         {
             string bundleUrl = story.bundleUrls[pageIndex];
@@ -200,48 +251,6 @@ public class DownloadManager_tmp : MonoBehaviour
             downloadedFiles++;
         }
 
-        // Загрузка аудиофайлов
-        for (int pageIndex = 0; pageIndex < totalAudioFiles; pageIndex++)
-        {
-            string languagePath = Path.Combine(storyManager.GetStoryFolderPath(storyIndex), languageCode);
-            string audioFileName = $"{story.storyName}_{storyIndex:D2}_{languageCode}_sc_{pageIndex:D2}.mp3";
-            string audioUrl = story.audioUrls[languageCode][pageIndex];
-
-            if (!Directory.Exists(languagePath))
-            {
-                Directory.CreateDirectory(languagePath);
-            }
-
-            string audioFilePath = Path.Combine(languagePath, audioFileName);
-
-            if (!File.Exists(audioFilePath))
-            {
-                using (UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(audioUrl, AudioType.MPEG))
-                {
-                    request.SendWebRequest();
-                    while (!request.isDone)
-                    {
-                        float currentProgress = (float)(downloadedFiles + request.downloadProgress) / totalFiles;
-                        UpdateCombinedProgress(currentProgress);
-                        yield return null;
-                    }
-
-                    if (request.result == UnityWebRequest.Result.Success)
-                    {
-                        File.WriteAllBytes(audioFilePath, request.downloadHandler.data);
-                    }
-                    else
-                    {
-                        Debug.LogError($"Ошибка скачивания аудио: {request.error}");
-                    }
-                }
-            }
-
-            SaveAudioFileEntry(storyIndex, pageIndex, audioFilePath);
-            downloadedAudioFiles++;
-            downloadedFiles++;
-        }
-
         UpdateCombinedProgress(1f);
         yield return new WaitForSeconds(1f);
 
@@ -259,45 +268,13 @@ public class DownloadManager_tmp : MonoBehaviour
         pauseMenu.gameObject.SetActive(true);
     }
 
+
     private void UpdateCombinedProgress(float progress)
     {
         int percent = Mathf.RoundToInt(progress * 100f);
         assetBundleProgressText.text = percent + "%";
         audioProgressText.text = percent + "%";
         progressBarImage.fillAmount = progress;
-    }
-
-    private void SaveAudioFileEntry(int storyIndex, int pageIndex, string path)
-    {
-        if (audioDataManager != null)
-        {
-            audioDataManager.SaveAudioFileDataToJson(storyIndex, pageIndex, path);
-        }
-    }
-
-    public void SaveAllAudioFileDataToJson(int storyIndex, StoryManager.Story story)
-    {
-        if (audioDataManager == null || story.audioUrls == null || !story.audioUrls.ContainsKey(languageCode))
-        {
-            Debug.LogWarning("Не удалось сохранить аудиоданные в JSON — нет данных или компонента.");
-            return;
-        }
-
-        int totalAudioFiles = story.audioUrls[languageCode].Length;
-
-        for (int pageIndex = 0; pageIndex < totalAudioFiles; pageIndex++)
-        {
-            string languagePath = Path.Combine(storyManager.GetStoryFolderPath(storyIndex), languageCode);
-            string audioFileName = $"{story.storyName}_{storyIndex:D2}_{languageCode}_sc_{pageIndex:D2}.mp3";
-            string audioFilePath = Path.Combine(languagePath, audioFileName);
-
-            if (File.Exists(audioFilePath))
-            {
-                SaveAudioFileEntry(storyIndex, pageIndex, audioFilePath);
-            }
-        }
-
-        Debug.Log("JSON обновлён для всех аудиофайлов.");
     }
 
     public void LoadStory(int index)

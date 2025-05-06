@@ -88,6 +88,15 @@ public class DownloadManager : MonoBehaviour
         DownloadNewLanguage();
         Debug.Log("Current selected language: " + languageCode);
 
+        //øòîğêà çàêğûâàåòñÿ
+        // ÏÅĞÅÄ ÍÀ×ÀËÎÌ ÇÀÃĞÓÇÊÈ — ÏËÀÂÍÎ ÇÀÊĞÛÒÜ ØÒÎĞÊÓ
+        if (transitionScript != null)
+        {
+            transitionScript.CloseCurtain();
+            yield return new WaitForSeconds(transitionScript.transitionDuration);
+        }
+        //////////////////////////////////////////////////////////////////////////
+
         totalAssetBundles = story.bundleUrls.Length;
         totalAudioFiles = story.audioUrls[languageCode].Length;
 
@@ -253,6 +262,15 @@ public class DownloadManager : MonoBehaviour
         audioProgressText.gameObject.SetActive(false);
         progressBarImage.gameObject.SetActive(false);
 
+
+        // ÏÎÑËÅ ÇÀÂÅĞØÅÍÈß ÇÀÃĞÓÇÊÈ — ÏËÀÂÍÎ ÎÒÊĞÛÒÜ ØÒÎĞÊÓ
+        if (transitionScript != null)
+        {
+            transitionScript.OpenCurtain();
+            yield return new WaitForSeconds(transitionScript.transitionDuration);
+        }
+        //////////////////////////////////////////////////////////////////////////////////////
+
         Platinio.MenuPopUp popUpLang = menuPopUps[3].GetComponent<Platinio.MenuPopUp>();
         langMenu.gameObject.SetActive(false);
         if (popUpLang != null) popUpLang.Toggle();
@@ -284,7 +302,6 @@ public class DownloadManager : MonoBehaviour
         PopUpMenu();
     }
 
-    /*
     public void PopUpMenu()
     {
         foreach (var popUpObj in menuPopUps)
@@ -294,5 +311,4 @@ public class DownloadManager : MonoBehaviour
             else Debug.LogWarning("MenuPopUp íå íàéäåí íà îáúåêòå " + popUpObj.name);
         }
     }
-    */
 }
