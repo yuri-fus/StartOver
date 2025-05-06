@@ -9,7 +9,7 @@ using static Unity.VisualScripting.Icons;
 public class DownloadManager_tmp : MonoBehaviour
 {
     [SerializeField] private GameObject[] menuPopUps;
-    public FadeMenu fadeOut_LoginUI;
+    //public FadeMenu fadeOut_LoginUI;
 
     public GameObject downloadProgress;
     [SerializeField] private GameObject assetBundleProgressPrefab;
@@ -258,9 +258,9 @@ public class DownloadManager_tmp : MonoBehaviour
         audioProgressText.gameObject.SetActive(false);
         progressBarImage.gameObject.SetActive(false);
 
-        Platinio.MenuPopUp popUpLang = menuPopUps[3].GetComponent<Platinio.MenuPopUp>();
+        //Platinio.MenuPopUp popUpLang = menuPopUps[3].GetComponent<Platinio.MenuPopUp>();
         langMenu.gameObject.SetActive(false);
-        if (popUpLang != null) popUpLang.Toggle();
+        //if (popUpLang != null) popUpLang.Toggle();
 
         yield return new WaitForSeconds(1.5f);
 
@@ -281,7 +281,7 @@ public class DownloadManager_tmp : MonoBehaviour
     {
         storyManager.LoadStory(index);
         storyManager.LoadLocalAudioClips(index);
-        fadeOut_LoginUI.FadeOut();
+        //fadeOut_LoginUI.FadeOut();
         PopUpMenu();
     }
 
@@ -289,9 +289,9 @@ public class DownloadManager_tmp : MonoBehaviour
     {
         foreach (var popUpObj in menuPopUps)
         {
-            Platinio.MenuPopUp popUp = popUpObj.GetComponent<Platinio.MenuPopUp>();
-            if (popUp != null) popUp.Toggle();
-            else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
+            //Platinio.MenuPopUp popUp = popUpObj.GetComponent<Platinio.MenuPopUp>();
+            //if (popUp != null) popUp.Toggle();
+            //else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
         }
     }
 }

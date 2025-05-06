@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class DownloadManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] menuPopUps;
-    public FadeMenu fadeOut_LoginUI;
+    //public FadeMenu fadeOut_LoginUI;
 
     public GameObject downloadProgress;
     [SerializeField] private GameObject assetBundleProgressPrefab;
@@ -46,7 +46,7 @@ public class DownloadManager : MonoBehaviour
     public GameObject prefabHolder;
 
     [SerializeField] private TransitionScript transitionScript; // —сылка на анимирующий скрипт
-    private bool transitioning = false;
+    //private bool transitioning = false;
 
     void Start()
     {
@@ -271,9 +271,9 @@ public class DownloadManager : MonoBehaviour
         }
         //////////////////////////////////////////////////////////////////////////////////////
 
-        Platinio.MenuPopUp popUpLang = menuPopUps[3].GetComponent<Platinio.MenuPopUp>();
+        //Platinio.MenuPopUp popUpLang = menuPopUps[3].GetComponent<Platinio.MenuPopUp>();
         langMenu.gameObject.SetActive(false);
-        if (popUpLang != null) popUpLang.Toggle();
+        //if (popUpLang != null) popUpLang.Toggle();
 
         yield return new WaitForSeconds(1.5f);
 
@@ -298,7 +298,7 @@ public class DownloadManager : MonoBehaviour
     {
         storyManager.LoadStory(index);
         storyManager.LoadLocalAudioClips(index);
-        fadeOut_LoginUI.FadeOut();
+        //fadeOut_LoginUI.FadeOut();
         PopUpMenu();
     }
 
@@ -306,9 +306,9 @@ public class DownloadManager : MonoBehaviour
     {
         foreach (var popUpObj in menuPopUps)
         {
-            Platinio.MenuPopUp popUp = popUpObj.GetComponent<Platinio.MenuPopUp>();
-            if (popUp != null) popUp.Toggle();
-            else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
+            //Platinio.MenuPopUp popUp = popUpObj.GetComponent<Platinio.MenuPopUp>();
+            //if (popUp != null) popUp.Toggle();
+            //else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
         }
     }
 }

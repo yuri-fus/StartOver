@@ -5,8 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using static UnityEngine.GraphicsBuffer;
-using Platinio;
+//using static UnityEngine.GraphicsBuffer;
+//using Platinio;
 
 public class StoryManager : MonoBehaviour
 {
@@ -57,7 +57,7 @@ public class StoryManager : MonoBehaviour
     //private const string AssetInfoFileName = "AssetInfo.json";
     private Dictionary<int, HashSet<int>> loadedAssets = new Dictionary<int, HashSet<int>>();
 
-    public PurchaseManager purchaseManager;
+    //public PurchaseManager purchaseManager;
     private DownloadManager downloadManager;
     private string language;
     private string filePath;
@@ -153,9 +153,9 @@ public class StoryManager : MonoBehaviour
     {
         foreach (var popUpObj in menuPopUps)
         {
-            Platinio.MenuPopUp popUp = popUpObj.GetComponent<Platinio.MenuPopUp>();
-            if (popUp != null) popUp.Toggle();
-            else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
+            //Platinio.MenuPopUp popUp = popUpObj.GetComponent<Platinio.MenuPopUp>();
+            //if (popUp != null) popUp.Toggle();
+            //else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
         }
     }
 
@@ -226,25 +226,18 @@ public class StoryManager : MonoBehaviour
 
     public void DownloadPurchasedStoryAssets(int storyIndex)
     {
-        //Platinio.MenuPopUp scrollUp = menuScroll.GetComponent<Platinio.MenuPopUp>();
-        //if (scrollUp != null)
+       
+        //PopUp The top menu/////////////////////////////////////////////////////////////////
+        //Platinio.MenuPopUp popUpTopMenu = menuPopUps[1].GetComponent<Platinio.MenuPopUp>();
+        //if (popUpTopMenu != null)
         //{
-        //    scrollUp.Toggle(); // Запускаем функцию Toggle
+        //    popUpTopMenu.Toggle();
+        //    Debug.LogWarning("Should load the level and should be topMenu PopUping!");
         //}
 
-        //PopUpMenu();
 
-        //PopUp The top menu/////////////////////////////////////////////////////////////////
-        Platinio.MenuPopUp popUpTopMenu = menuPopUps[1].GetComponent<Platinio.MenuPopUp>();
-        if (popUpTopMenu != null)
-        {
-            popUpTopMenu.Toggle();
-            Debug.LogWarning("Should load the level and should be topMenu PopUping!");
-        }
-
-
-        if (purchaseManager.IsStoryPurchased(storyIndex))
-        {
+        //if (purchaseManager.IsStoryPurchased(storyIndex))
+        //{
             LanguageSelect();
             LoadAudioFromJson();
             Debug.Log($"Downloading file: {filePath} for language: {language}");
@@ -265,11 +258,11 @@ public class StoryManager : MonoBehaviour
             }
             /////////////////////////////////////////////////////////////////////////////////////
             */
-        }
-        else
-        {
-            Debug.LogWarning("Story not purchased: " + storyIndex);
-        }
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("Story not purchased: " + storyIndex);
+        //}
     }
 
     /*

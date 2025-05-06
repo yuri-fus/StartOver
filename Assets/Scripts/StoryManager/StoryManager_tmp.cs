@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using static UnityEngine.GraphicsBuffer;
-using Platinio;
+//using Platinio;
 
 public class StoryManager_tmp : MonoBehaviour
 {
@@ -58,7 +58,7 @@ public string[] bundleUrls;
     //private const string AssetInfoFileName = "AssetInfo.json";
     private Dictionary<int, HashSet<int>> loadedAssets = new Dictionary<int, HashSet<int>>();
 
-    public PurchaseManager purchaseManager;
+    //public PurchaseManager purchaseManager;
     private DownloadManager downloadManager;
     private string language;
     private string filePath;
@@ -150,6 +150,7 @@ public string[] bundleUrls;
         Debug.Log("StoryManager initialized.");
     }
 
+    /*
     public void PopUpMenu()
     {
         foreach (var popUpObj in menuPopUps)
@@ -159,7 +160,7 @@ public string[] bundleUrls;
             else Debug.LogWarning("MenuPopUp не найден на объекте " + popUpObj.name);
         }
     }
-
+    */
 
     public void LanguageSelect()
     {
@@ -227,14 +228,7 @@ public string[] bundleUrls;
 
     public void DownloadPurchasedStoryAssets(int storyIndex)
     {
-        //Platinio.MenuPopUp scrollUp = menuScroll.GetComponent<Platinio.MenuPopUp>();
-        //if (scrollUp != null)
-        //{
-        //    scrollUp.Toggle(); // Запускаем функцию Toggle
-        //}
-
-        //PopUpMenu();
-
+        /*
         //PopUp The top menu/////////////////////////////////////////////////////////////////
         Platinio.MenuPopUp popUpTopMenu = menuPopUps[1].GetComponent<Platinio.MenuPopUp>();
         if (popUpTopMenu != null)
@@ -242,14 +236,13 @@ public string[] bundleUrls;
             popUpTopMenu.Toggle();
             Debug.LogWarning("Should load the level and should be topMenu PopUping!");
         }
+        */
 
-
-        if (purchaseManager.IsStoryPurchased(storyIndex))
-        {
+       
             LanguageSelect();
             LoadAudioFromJson();
             Debug.Log($"Downloading file: {filePath} for language: {language}");
-            StartCoroutine(downloadManager.DownloadStoryAssets(storyIndex, stories[storyIndex]));
+            //StartCoroutine(downloadManager.DownloadStoryAssets(storyIndex, stories[storyIndex]));
 
             /*
             //PopUp The top menu/////////////////////////////////////////////////////////////////
@@ -266,11 +259,7 @@ public string[] bundleUrls;
             }
             /////////////////////////////////////////////////////////////////////////////////////
             */
-        }
-        else
-        {
-            Debug.LogWarning("Story not purchased: " + storyIndex);
-        }
+       
     }
 
     /*
@@ -660,6 +649,6 @@ public string[] bundleUrls;
             //Debug.Log(currentPage);
         }
     }
-`
+
 
 }
