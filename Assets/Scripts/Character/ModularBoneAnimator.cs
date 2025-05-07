@@ -131,4 +131,25 @@ public class ModularBoneAnimator : MonoBehaviour
 
         EnableCategory(categoryToEnable);
     }
+
+    public void SwitchMultipleGroups(Dictionary<string, string> groupToCategoryMap)
+    {
+        foreach (var pair in groupToCategoryMap)
+        {
+            string groupName = pair.Key.ToLower();
+            string categoryToEnable = pair.Value;
+
+            // Отключаем все в этой группе
+            foreach (var category in categories)
+            {
+                if (category.name.ToLower().Contains(groupName))
+                {
+                    DisableCategory(category.name);
+                }
+            }
+
+            // Включаем нужную категорию
+            EnableCategory(categoryToEnable);
+        }
+    }
 }
